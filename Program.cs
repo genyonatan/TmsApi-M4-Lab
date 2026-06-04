@@ -12,6 +12,10 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+app.UseMiddleware<RequestLoggingMiddleware>();
+
+app.UseExceptionHandler("/error");
+
 app.UseHttpsRedirection();
 
 app.UseRouting();
@@ -29,5 +33,7 @@ app.MapGet("/api/assessments/results", () => Results.Ok(new
     letterGrade = "A"
 }))
 .RequireAuthorization();
+
+app.Map("/error", () => Results.Problem("An unexpected error occurred."));
 
 app.Run();
