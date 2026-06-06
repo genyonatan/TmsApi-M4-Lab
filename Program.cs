@@ -12,6 +12,15 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+builder.Host.UseDefaultServiceProvider(options =>
+{
+    options.ValidateScopes = true;
+    options.ValidateOnBuild = true;
+});
+
+builder.Services.AddSingleton<EnrollmentWorker>();
+builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+
 app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.UseExceptionHandler("/error");
