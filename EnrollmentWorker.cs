@@ -1,14 +1,19 @@
 public class EnrollmentWorker
 {
-    private readonly IEnrollmentService _enrollmentService;
+    private readonly IServiceScopeFactory _scopeFactory;
 
-    public EnrollmentWorker(IEnrollmentService enrollmentService)
+    public EnrollmentWorker(IServiceScopeFactory scopeFactory)
     {
-        _enrollmentService = enrollmentService;
+        _scopeFactory = scopeFactory;
     }
 
     public void ProcessBatch()
     {
-        Console.WriteLine("Processing enrollment batch...");
+        using var scope = _scopeFactory.CreateScope();
+
+        var enrollmentService =
+            scope.ServiceProvider.GetRequiredService<IEnrollmentService>();
+
+        Console.WriteLine("Processing enrollment batch safely...");
     }
 }

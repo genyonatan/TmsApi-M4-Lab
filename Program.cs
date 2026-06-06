@@ -10,7 +10,6 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
-var app = builder.Build();
 
 builder.Host.UseDefaultServiceProvider(options =>
 {
@@ -21,6 +20,7 @@ builder.Host.UseDefaultServiceProvider(options =>
 builder.Services.AddSingleton<EnrollmentWorker>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 
+var app = builder.Build();
 app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.UseExceptionHandler("/error");
@@ -42,6 +42,12 @@ app.MapGet("/api/assessments/results", () => Results.Ok(new
     letterGrade = "A"
 }))
 .RequireAuthorization();
+
+app.MapGet("/api/enrollments/worker-smoke", (EnrollmentWorker worker) =>
+{
+    worker.ProcessBatch();
+    return Results.Ok("processed");
+});
 
 app.Map("/error", () => Results.Problem("An unexpected error occurred."));
 
