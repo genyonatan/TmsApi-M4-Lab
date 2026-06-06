@@ -56,4 +56,35 @@ app.MapGet("/api/enrollments/worker-smoke", (EnrollmentWorker worker) =>
 
 app.Map("/error", () => Results.Problem("An unexpected error occurred."));
 
+app.MapPost("/api/enrollments/test", async (
+    IEnrollmentService enrollmentService,
+    string studentId,
+    string courseCode) =>
+{
+    var record = await enrollmentService.EnrollAsync(studentId, courseCode);
+    return Results.Ok(record);
+});
+
+app.MapGet("/api/enrollments/test/{id}", async (
+    IEnrollmentService enrollmentService,
+    string id) =>
+{
+    var record = await enrollmentService.GetByIdAsync(id);
+
+    return record is null
+        ? Results.NotFound()
+        : Results.Ok(record);
+});
+
+app.MapDelete("/api/enrollments/test/{id}", async (
+    IEnrollmentService enrollmentService,
+    string id) =>
+{
+    var removed = await enrollmentService.DeleteAsync(id);
+
+    return removed
+        ? Results.Ok("deleted")
+        : Results.NotFound();
+});
+
 app.Run();
