@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,8 @@ builder.Services.AddOptions<PaymentOptions>()
 
 builder.Services.AddControllers();
 builder.Services.AddProblemDetails();
+
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
 app.UseMiddleware<RequestLoggingMiddleware>();
@@ -92,11 +95,18 @@ app.MapDelete("/api/enrollments/test/{id}", async (
         : Results.NotFound();
 });
 
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    app.MapScalarApiReference();
+}
+
 app.MapGet("/api/error", () =>
 {
     throw new TmsDatabaseException(
         "Simulated database failure for ProblemDetails testing"
     );
 });
+
 
 app.Run();
