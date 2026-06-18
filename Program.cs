@@ -27,11 +27,13 @@ builder.Services.AddOptions<PaymentOptions>()
 
 
 builder.Services.AddControllers();
+builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 app.UseMiddleware<RequestLoggingMiddleware>();
 
-app.UseExceptionHandler("/error");
+app.UseExceptionHandler();
+app.UseStatusCodePages();
 
 app.UseHttpsRedirection();
 
@@ -88,6 +90,13 @@ app.MapDelete("/api/enrollments/test/{id}", async (
     return removed
         ? Results.Ok("deleted")
         : Results.NotFound();
+});
+
+app.MapGet("/api/error", () =>
+{
+    throw new TmsDatabaseException(
+        "Simulated database failure for ProblemDetails testing"
+    );
 });
 
 app.Run();
