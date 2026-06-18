@@ -25,6 +25,9 @@ builder.Services.AddOptions<PaymentOptions>()
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
+
+builder.Services.AddControllers();
+
 var app = builder.Build();
 app.UseMiddleware<RequestLoggingMiddleware>();
 

@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 public interface IEnrollmentService
 {
     Task<EnrollmentRecord> EnrollAsync(string studentId, string courseCode);
@@ -8,7 +9,8 @@ public interface IEnrollmentService
 
 public class EnrollmentService : IEnrollmentService
 {
-    private readonly Dictionary<string, EnrollmentRecord> _store = new();
+    // private readonly Dictionary<string, EnrollmentRecord> _store = new();
+    private static readonly ConcurrentDictionary<string, EnrollmentRecord> _store = new();
     private readonly ILogger<EnrollmentService> _logger;
 
     public EnrollmentService(ILogger<EnrollmentService> logger)
@@ -77,7 +79,8 @@ public class EnrollmentService : IEnrollmentService
 
     public Task<bool> DeleteAsync(string id)
     {
-        var removed = _store.Remove(id);
+        // var removed = _store.Remove(id);
+        var removed = _store.TryRemove(id, out _);
 
         if (removed)
         {
